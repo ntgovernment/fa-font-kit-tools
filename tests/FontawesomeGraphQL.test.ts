@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FontawesomeGraphQL, getAccessToken, queryGraphQL } from '../src/FontawesomeGraphQL.client.js';
+import type { GraphQLSchema } from '../src/FontawesomeGraphQL.client.js';
 
 function jsonResponse(
   body: unknown,
@@ -162,10 +163,168 @@ describe('FontawesomeGraphQL', () => {
   });
 });
 
+describe('FontawesomeGraphQL.discoverSchema', () => {
+  const tokenData = {
+    access_token: 'discovery-token',
+    expires_in: 10_000,
+    scopes: ['kits_read'],
+    token_type: 'Bearer',
+  };
+
+  it('returns schema metadata without fetching kits and reuses the access token', async () => {
+    const schema: GraphQLSchema = {
+      queryType: { name: 'RootQuery' },
+      mutationType: null,
+      subscriptionType: null,
+      types: [{
+        kind: 'OBJECT',
+        name: 'Kit',
+        description: 'A kit',
+        fields: [{
+          name: 'exampleMetadata',
+          description: 'Example additional kit metadata',
+          args: [{
+            name: 'format',
+            description: 'Output format',
+            defaultValue: '"short"',
+            type: { kind: 'SCALAR', name: 'String', ofType: null },
+          }],
+          type: {
+            kind: 'NON_NULL',
+            name: null,
+            ofType: {
+              kind: 'LIST',
+              name: null,
+              ofType: { kind: 'SCALAR', name: 'String', ofType: null },
+            },
+          },
+          isDeprecated: true,
+          deprecationReason: 'Use the replacement field',
+        }],
+        inputFields: null,
+        interfaces: [],
+        enumValues: null,
+        possibleTypes: null,
+      }, {
+        kind: 'ENUM',
+        name: 'ExampleFormat',
+        description: null,
+        fields: null,
+        inputFields: null,
+        interfaces: null,
+        enumValues: [{
+          name: 'SHORT',
+          description: 'Short format',
+          isDeprecated: false,
+          deprecationReason: null,
+        }],
+        possibleTypes: null,
+      }],
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(tokenData))
+      .mockResolvedValueOnce(jsonResponse({ data: { __schema: schema } }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new FontawesomeGraphQL('api');
+    await expect(client.discoverSchema()).resolves.toEqual(schema);
+    await expect(client.accessToken()).resolves.toBe('discovery-token');
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [url, request] = fetchMock.mock.calls[1];
+    expect(url).toBe('https://api.fontawesome.com');
+    expect(request.method).toBe('POST');
+    const { query, variables } = JSON.parse(request.body);
+    expect(variables).toEqual({});
+    for (const selection of [
+      '__schema', 'queryType', 'mutationType', 'subscriptionType',
+      'description', 'fields(includeDeprecated: true)', 'args { ...InputValue }',
+      'inputFields', 'interfaces', 'enumValues(includeDeprecated: true)',
+      'possibleTypes', 'defaultValue', 'isDeprecated', 'deprecationReason', 'ofType',
+    ]) {
+      expect(query).toContain(selection);
+    }
+    expect(query).not.toMatch(/\bme\s*\{/);
+    expect(query).not.toMatch(/\bkits\s*\{/);
+  });
+
+  it('propagates rejected introspection instead of returning an empty schema', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce(jsonResponse(tokenData))
+      .mockResolvedValueOnce(jsonResponse({
+        data: { __schema: null },
+        errors: [{ message: 'Introspection is disabled' }],
+      })));
+
+    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+      'Introspection is disabled',
+    );
+  });
+
+  it.each([{ __schema: null }, {}, undefined])('rejects missing schema data: %j', async (data) => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce(jsonResponse(tokenData))
+      .mockResolvedValueOnce(jsonResponse({ data })));
+
+    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+      'GraphQL schema discovery returned no schema',
+    );
+  });
+
+  it('propagates HTTP errors during discovery', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce(jsonResponse(tokenData))
+      .mockResolvedValueOnce(jsonResponse({}, {
+        ok: false,
+        status: 403,
+        statusText: 'Forbidden',
+      })));
+
+    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+      'GraphQL request failed: 403 Forbidden',
+    );
+  });
+
+  it('does not request the schema when authentication fails', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}, {
+      ok: false,
+      status: 401,
+      statusText: 'Unauthorized',
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+      'Token request failed: 401 Unauthorized',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe.skipIf(!process.env.FA_API_TOKEN)('FontawesomeGraphQL live', () => {
   it('returns kits for the configured token', async () => {
     const client = new FontawesomeGraphQL(process.env.FA_API_TOKEN ?? '');
     const kits = await client.getKits();
     expect(Array.isArray(kits)).toBe(true);
+  }, 20_000);
+
+  it('discovers the schema and the fields behind me.kits', async () => {
+    const client = new FontawesomeGraphQL(process.env.FA_API_TOKEN ?? '');
+    const schema = await client.discoverSchema();
+    const queryType = schema.types.find((type) => type.name === schema.queryType.name);
+    const meField = queryType?.fields?.find((field) => field.name === 'me');
+    expect(meField).toBeDefined();
+
+    let meType = meField?.type;
+    while (meType?.ofType) meType = meType.ofType;
+    const accountType = schema.types.find((type) => type.name === meType?.name);
+    const kitsField = accountType?.fields?.find((field) => field.name === 'kits');
+    expect(kitsField).toBeDefined();
+
+    let kitType = kitsField?.type;
+    while (kitType?.ofType) kitType = kitType.ofType;
+    const kit = schema.types.find((type) => type.name === kitType?.name);
+    expect(kit?.fields?.map((field) => field.name)).toEqual(
+      expect.arrayContaining(['name', 'token', 'version', 'licenseSelected']),
+    );
   }, 20_000);
 });

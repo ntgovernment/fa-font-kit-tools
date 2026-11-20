@@ -18,6 +18,61 @@ interface KitsQuery {
   } | null;
 }
 
+export type GraphQLTypeKind =
+  | 'SCALAR'
+  | 'OBJECT'
+  | 'INTERFACE'
+  | 'UNION'
+  | 'ENUM'
+  | 'INPUT_OBJECT'
+  | 'LIST'
+  | 'NON_NULL';
+
+export interface GraphQLTypeRef {
+  kind: GraphQLTypeKind;
+  name: string | null;
+  ofType?: GraphQLTypeRef | null;
+}
+
+export interface GraphQLInputValue {
+  name: string;
+  description: string | null;
+  type: GraphQLTypeRef;
+  defaultValue: string | null;
+}
+
+export interface GraphQLField {
+  name: string;
+  description: string | null;
+  args: GraphQLInputValue[];
+  type: GraphQLTypeRef;
+  isDeprecated: boolean;
+  deprecationReason: string | null;
+}
+
+export interface GraphQLSchemaType {
+  kind: GraphQLTypeKind;
+  name: string;
+  description: string | null;
+  fields: GraphQLField[] | null;
+  inputFields: GraphQLInputValue[] | null;
+  interfaces: GraphQLTypeRef[] | null;
+  enumValues: {
+    name: string;
+    description: string | null;
+    isDeprecated: boolean;
+    deprecationReason: string | null;
+  }[] | null;
+  possibleTypes: GraphQLTypeRef[] | null;
+}
+
+export interface GraphQLSchema {
+  queryType: { name: string };
+  mutationType: { name: string } | null;
+  subscriptionType: { name: string } | null;
+  types: GraphQLSchemaType[];
+}
+
 export class FontawesomeGraphQL {
   #apiToken = '';
   #accessToken = '';
@@ -45,6 +100,7 @@ export class FontawesomeGraphQL {
             name
             token
             version
+            status
             licenseSelected
           }
         }
@@ -53,6 +109,83 @@ export class FontawesomeGraphQL {
     const token = await this.accessToken();
     const data = await queryGraphQL<KitsQuery>(token, query);
     return data?.me?.kits ?? [];
+  }
+
+  async discoverSchema(): Promise<GraphQLSchema> {
+    const query = `
+      query DiscoverSchema {
+        __schema {
+          queryType { name }
+          mutationType { name }
+          subscriptionType { name }
+          types {
+            kind
+            name
+            description
+            fields(includeDeprecated: true) {
+              name
+              description
+              args { ...InputValue }
+              type { ...TypeRef }
+              isDeprecated
+              deprecationReason
+            }
+            inputFields { ...InputValue }
+            interfaces { ...TypeRef }
+            enumValues(includeDeprecated: true) {
+              name
+              description
+              isDeprecated
+              deprecationReason
+            }
+            possibleTypes { ...TypeRef }
+          }
+        }
+      }
+
+      fragment InputValue on __InputValue {
+        name
+        description
+        type { ...TypeRef }
+        defaultValue
+      }
+
+      fragment TypeRef on __Type {
+        kind
+        name
+        ofType {
+          kind
+          name
+          ofType {
+            kind
+            name
+            ofType {
+              kind
+              name
+              ofType {
+                kind
+                name
+                ofType {
+                  kind
+                  name
+                  ofType {
+                    kind
+                    name
+                    ofType { kind name }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+    const token = await this.accessToken();
+    const data = await queryGraphQL<{ __schema: GraphQLSchema | null }>(token, query);
+    if (!data?.__schema) {
+      throw new Error('GraphQL schema discovery returned no schema; introspection may be disabled.');
+    }
+    return data.__schema;
   }
 }
 

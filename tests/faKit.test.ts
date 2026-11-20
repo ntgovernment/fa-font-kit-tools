@@ -1,0 +1,100 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { faKit } from '../src/faKit.client.js';
+
+interface ScriptEl {
+  tag: 'script';
+  src?: string;
+  crossOrigin?: string;
+}
+
+interface LinkEl {
+  tag: 'link';
+  rel?: string;
+  href?: string;
+  onload?: () => void;
+}
+
+function installDocument() {
+  const children: Array<ScriptEl | LinkEl> = [];
+  const fonts = {
+    ready: Promise.resolve(),
+    load: vi.fn<(font: string) => Promise<unknown[]>>().mockResolvedValue([]),
+  };
+  const documentMock = {
+    head: {
+      appendChild(node: ScriptEl | LinkEl) {
+        children.push(node);
+        return node;
+      },
+    },
+    createElement(tag: string) {
+      if (tag === 'link') return { tag: 'link' } as LinkEl;
+      return { tag: 'script' } as ScriptEl;
+    },
+    fonts,
+  };
+
+  vi.stubGlobal('document', documentMock);
+  return { children, fonts };
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
+
+describe('faKit', () => {
+  it('injects the kit script', async () => {
+    const { children, fonts } = installDocument();
+
+    faKit('abc123', '/fallback');
+
+    expect(children).toEqual([
+      {
+        tag: 'script',
+        src: 'https://kit.fontawesome.com/abc123.js',
+        crossOrigin: 'anonymous',
+      },
+    ]);
+    await vi.waitFor(() => {
+      expect(fonts.load).toHaveBeenCalledWith('1px "Fontawesome 7 Pro"');
+    });
+  });
+
+  it('logs when the CDN font loads', async () => {
+    const { fonts } = installDocument();
+    fonts.load.mockResolvedValue([]);
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    faKit('abc123', '/fallback', true);
+    await vi.waitFor(() => {
+      expect(fonts.load).toHaveBeenCalledWith('1px "Fontawesome 7 Pro"');
+    });
+    await vi.waitFor(() => {
+      expect(log).toHaveBeenCalledWith('Fontawesome cdn loaded');
+    });
+  });
+
+  it('adds the stylesheet fallback when the font fails to load', async () => {
+    const { children, fonts } = installDocument();
+    fonts.load.mockRejectedValue(new Error('missing'));
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    faKit('abc123', '/fallback', true);
+
+    await vi.waitFor(() => {
+      expect(children).toHaveLength(2);
+    });
+
+    const link = children[1] as LinkEl;
+    expect(link).toMatchObject({
+      tag: 'link',
+      rel: 'stylesheet',
+      href: '/fallback/abc123.css',
+    });
+    expect(log).toHaveBeenCalledWith('Load Fontawesome fallback');
+
+    link.onload?.();
+    expect(log).toHaveBeenCalledWith('Fontawesome fallback loaded');
+  });
+});

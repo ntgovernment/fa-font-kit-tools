@@ -34,16 +34,12 @@ const execAsync = promisify(exec);
 const kitPackagePrefix = '@awesome.me/kit-';
 const distDir = path.join(process.cwd(), 'dist');
 const resultsPath = path.join(distDir, 'kit-results.json');
+const versionsPath = path.join(distDir, 'kit-versions.json');
 let FA_API_TOKEN = process?.env?.FA_API_TOKEN;
 let FA_PKG_TOKEN = process?.env?.FA_PKG_TOKEN;
-if (![FA_API_TOKEN, FA_PKG_TOKEN].every(Boolean)) {
-  dotenv.config();
-  FA_API_TOKEN = process?.env?.FA_API_TOKEN;
-  FA_PKG_TOKEN = process?.env?.FA_PKG_TOKEN;
-}
-if (![FA_API_TOKEN, FA_PKG_TOKEN].every(Boolean)) {
-    console.error('Excpected env var: FA_API_TOKEN');
-    process?.exit(1);
+
+export interface KitVersionRecord {
+  [major: string]: string[];
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -51,6 +47,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 }
 
 async function main() {
+  loadTokens();
+  if (![FA_API_TOKEN, FA_PKG_TOKEN].every(Boolean)) {
+    console.error('Excpected env var: FA_API_TOKEN');
+    process.exit(1);
+  }
   const flags = parseArgs(process.argv.slice(2));
   const previousFailures = await readPreviousFailures();
   const packaged = await readPackagedKitTokens();
@@ -171,7 +172,58 @@ export async function copyInstalledKit(kit: FAKitExtended): Promise<string> {
   const versionKey = kitVersionKey(kit.version);
   const icons = path.join(process.cwd(), 'node_modules', '@awesome.me', `kit-${kit.token}`, 'icons');
   await mergeSharedAssets(icons, versionKey);
-  return writeKitStylesheets(icons, kit.token, versionKey);
+  const dist = await writeKitStylesheets(icons, kit.token, versionKey);
+  await recordKitVersion(kit.token, kit.version);
+  return dist;
+}
+
+export function placeKitVersion(record: KitVersionRecord, token: string, version: string): KitVersionRecord {
+  const major = majorVersionKey(version);
+  const next: KitVersionRecord = {};
+  for (const [key, tokens] of Object.entries(record)) {
+    const remaining = tokens.filter((item) => item !== token);
+    if (remaining.length > 0) next[key] = remaining;
+  }
+  next[major] = [...(next[major] ?? []), token].sort();
+  return Object.fromEntries(
+    Object.entries(next).sort(([a], [b]) => Number(a) - Number(b)),
+  );
+}
+
+function majorVersionKey(version: string): string {
+  if (version === 'latest') return '5';
+  const major = version.split('.')[0];
+  return /^\d+$/.test(major) ? major : '0';
+}
+
+function loadTokens() {
+  if ([FA_API_TOKEN, FA_PKG_TOKEN].every(Boolean)) return;
+  dotenv.config();
+  FA_API_TOKEN = process?.env?.FA_API_TOKEN;
+  FA_PKG_TOKEN = process?.env?.FA_PKG_TOKEN;
+}
+
+async function recordKitVersion(token: string, version: string) {
+  const record = placeKitVersion(await readKitVersions(), token, version);
+  await mkdir(distDir, { recursive: true });
+  await writeFile(versionsPath, `${JSON.stringify(record, null, 2)}\n`);
+}
+
+async function readKitVersions(): Promise<KitVersionRecord> {
+  try {
+    const raw = await readFile(versionsPath, 'utf8');
+    const data = JSON.parse(raw) as unknown;
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+    const record: KitVersionRecord = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (!Array.isArray(value)) continue;
+      record[key] = value.filter((item): item is string => typeof item === 'string');
+    }
+    return record;
+  } catch (err) {
+    if (isEnoent(err)) return {};
+    throw err;
+  }
 }
 
 function kitVersionKey(version: string): string {

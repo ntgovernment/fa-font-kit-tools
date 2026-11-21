@@ -1,12 +1,33 @@
-name: Font Awesome GraphQL Check
+name: Build kits
 
 on:
-  workflow_dispatch: # Allows manual triggering from the Actions tab
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Retry kits previously recorded as not installed (--force)
+        type: boolean
+        default: false
+      update:
+        description: Reinstall kits already listed in package.json (--update)
+        type: boolean
+        default: false
+      retry:
+        description: Kit tokens or names to retry, comma-separated (--retry)
+        required: false
+        type: string
+        default: ''
   schedule:
-    - cron: '0 0 * * 1' # Runs every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-kits-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  query-fa-api:
+  build-kits:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,8 +37,63 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
 
-      - name: Run Font Awesome GraphQL script
+      - name: Install dependencies
+        env:
+          FONTAWESOME_PACKAGE_TOKEN: ${{ secrets.FA_PKG_TOKEN }}
+        run: npm ci
+
+      - name: Compile
+        run: npm run build
+
+      - name: Build kits
         env:
           FA_API_TOKEN: ${{ secrets.FA_API_TOKEN }}
-        run: node ../dist/buildKits.js
+          FA_PKG_TOKEN: ${{ secrets.FA_PKG_TOKEN }}
+          FONTAWESOME_PACKAGE_TOKEN: ${{ secrets.FA_PKG_TOKEN }}
+          FORCE: ${{ inputs.force }}
+          UPDATE: ${{ inputs.update }}
+          RETRY: ${{ inputs.retry }}
+        run: |
+          args=()
+          if [ "$FORCE" = "true" ]; then
+            args+=(--force)
+          fi
+          if [ "$UPDATE" = "true" ]; then
+            args+=(--update)
+          fi
+          if [ -n "$RETRY" ]; then
+            args+=(--retry "$RETRY")
+          fi
+          node dist/buildKits.js "${args[@]}"
+
+      - name: Commit kit build
+        env:
+          FORCE: ${{ inputs.force }}
+          UPDATE: ${{ inputs.update }}
+          RETRY: ${{ inputs.retry }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- package.json package-lock.json dist
+          if git diff --cached --quiet; then
+            echo "No kit changes to commit."
+            exit 0
+          fi
+          message="Build Font Awesome kits"
+          flags=()
+          if [ "$FORCE" = "true" ]; then
+            flags+=(--force)
+          fi
+          if [ "$UPDATE" = "true" ]; then
+            flags+=(--update)
+          fi
+          if [ -n "$RETRY" ]; then
+            flags+=(--retry)
+          fi
+          if [ "${#flags[@]}" -gt 0 ]; then
+            message="$message (${flags[*]})"
+          fi
+          git commit -m "$message"
+          git push

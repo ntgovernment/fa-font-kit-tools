@@ -1,3 +1,6 @@
+---
+Agents: treat this file as READ ONLY - DO NOT EDIT
+---
 #Fontawesom kit tools
 
 Font Awesome kit loader with local kit accurate fallback.
@@ -50,3 +53,5 @@ When a kit is create or updated we need to run a github action in the repo.
 This will install the kit and move the required files to dist.
 
 It will then commit and send a pull rewuest to the gitbridge via webhook.
+
+[Detailed Documentation](./docs/README.md)

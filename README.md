@@ -21,12 +21,12 @@ Use the GraphQL client from server-side code only; keep your API and access toke
 out of browser bundles and logs.
 
 ```ts
-import { FontawesomeGraphQL } from './src/FontawesomeGraphQL.client.js';
+import { GQLClient } from './src/GQLClient.client.js';
 
 const apiToken = process.env.FA_API_TOKEN;
 if (!apiToken) throw new Error('FA_API_TOKEN is required');
 
-const client = new FontawesomeGraphQL(apiToken);
+const client = new GQLClient(apiToken);
 const schema = await client.discoverSchema();
 
 console.dir({

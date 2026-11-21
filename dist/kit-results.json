@@ -1,0 +1,166 @@
+{
+  "installed": [
+    {
+      "name": "nt-dev.nt.gov.au",
+      "token": "41b791824a",
+      "version": "6.x",
+      "major": 6,
+      "licenseSelected": "pro",
+      "dist": "dist/kit-41b791824a"
+    },
+    {
+      "name": "ntg-standard-icons-2027",
+      "token": "00b1b3bcf8",
+      "version": "7.x",
+      "major": 7,
+      "licenseSelected": "pro",
+      "dist": "dist/kit-00b1b3bcf8"
+    }
+  ],
+  "not_installed": [
+    {
+      "name": "covid-nt",
+      "token": "bda218d76e",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_09_909Z-debug-0.log"
+    },
+    {
+      "name": "Digital Territory",
+      "token": "7a1b0f6c30",
+      "version": "5.x",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_11_776Z-debug-0.log"
+    },
+    {
+      "name": "DITT intranet",
+      "token": "43d667f0b2",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_13_661Z-debug-0.log"
+    },
+    {
+      "name": "For subdomains under nt.gov.au domain",
+      "token": "d8e5f638f7",
+      "version": "6.x",
+      "major": 6,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_15_233Z-debug-0.log"
+    },
+    {
+      "name": "fse",
+      "token": "22f4a588e2",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_17_154Z-debug-0.log"
+    },
+    {
+      "name": "github.com/ntgovernment",
+      "token": "9bf658a5c7",
+      "version": "7.x",
+      "major": 7,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_18_897Z-debug-0.log"
+    },
+    {
+      "name": "Invest NT",
+      "token": "011235fb36",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_20_582Z-debug-0.log"
+    },
+    {
+      "name": "ldm",
+      "token": "d57a1e766d",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_22_241Z-debug-0.log"
+    },
+    {
+      "name": "Middle Arm Sustainable Development Precinct",
+      "token": "50296e7f4d",
+      "version": "6.x",
+      "major": 6,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_23_839Z-debug-0.log"
+    },
+    {
+      "name": "NTG campaign sites - Font Awesome 5 Pro",
+      "token": "a566abb2ac",
+      "version": "5.x",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_46_548Z-debug-0.log"
+    },
+    {
+      "name": "NTG central",
+      "token": "49bb42826d",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_48_555Z-debug-0.log"
+    },
+    {
+      "name": "NTG Forms Intelledox",
+      "token": "38cb245874",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_50_372Z-debug-0.log"
+    },
+    {
+      "name": "NTG internal 5.0",
+      "token": "0176b0691b",
+      "version": "5.x",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_52_578Z-debug-0.log"
+    },
+    {
+      "name": "NTGOVAU External V6",
+      "token": "f73a36f593",
+      "version": "6.x",
+      "major": 6,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_12_54_329Z-debug-0.log"
+    },
+    {
+      "name": "NTG Zeroheight Design System Docs",
+      "token": "b21dd0e901",
+      "version": "5.x",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_13_00_922Z-debug-0.log"
+    },
+    {
+      "name": "Parks",
+      "token": "0d21361ccb",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_13_02_764Z-debug-0.log"
+    },
+    {
+      "name": "SG Website",
+      "token": "04b5860afb",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_13_04_759Z-debug-0.log"
+    },
+    {
+      "name": "Territory Services",
+      "token": "4b3762d953",
+      "version": "latest",
+      "major": 5,
+      "licenseSelected": "pro",
+      "reason": "npm error A complete log of this run can be found in: /Users/rgb/.npm/_logs/2026-11-21T01_13_06_522Z-debug-0.log"
+    }
+  ]
+}

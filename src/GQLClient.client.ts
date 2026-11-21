@@ -158,7 +158,7 @@ export interface GraphQLSchema {
   types: GraphQLSchemaType[];
 }
 
-export class FontawesomeGraphQL {
+export class GQLClient {
   #apiToken = '';
   #accessToken = '';
   #accessTokenExpire = 0;

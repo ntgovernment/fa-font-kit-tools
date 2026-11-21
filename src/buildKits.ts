@@ -3,7 +3,7 @@ import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import dotenv from 'dotenv';
-import { FontawesomeGraphQL, FAKitExtended } from "./FontawesomeGraphQL.client.js";
+import { GQLClient, FAKitExtended } from "./GQLClient.client.js";
 
 interface InstalledKit {
   name: string;
@@ -52,7 +52,7 @@ async function main() {
   const flags = parseArgs(process.argv.slice(2));
   const previousFailures = await readPreviousFailures();
   const packaged = await readPackagedKitTokens();
-  const gql = new FontawesomeGraphQL(FA_API_TOKEN!);
+  const gql = new GQLClient(FA_API_TOKEN!);
   const kits = await gql.getKits();
   const installed: InstalledKit[] = [];
   const failed: FailedKit[] = [];

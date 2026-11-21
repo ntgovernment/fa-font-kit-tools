@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FontawesomeGraphQL, getAccessToken, queryGraphQL } from '../src/FontawesomeGraphQL.client.js';
-import type { GraphQLSchema } from '../src/FontawesomeGraphQL.client.js';
+import { GQLClient, getAccessToken, queryGraphQL } from '../src/GQLClient.client.js';
+import type { GraphQLSchema } from '../src/GQLClient.client.js';
 
 function jsonResponse(
   body: unknown,
@@ -96,7 +96,7 @@ describe('queryGraphQL', () => {
   });
 });
 
-describe('FontawesomeGraphQL', () => {
+describe('GQLClient', () => {
   it('loads kits and reuses the access token', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse({
@@ -117,7 +117,7 @@ describe('FontawesomeGraphQL', () => {
       }));
     vi.stubGlobal('fetch', fetchMock);
 
-    const client = new FontawesomeGraphQL('api');
+    const client = new GQLClient('api');
     await expect(client.getKits()).resolves.toEqual([
       { name: 'A', token: 't', version: '1', licenseSelected: 'pro', major: 1 },
     ]);
@@ -143,7 +143,7 @@ describe('FontawesomeGraphQL', () => {
       }));
     vi.stubGlobal('fetch', fetchMock);
 
-    const client = new FontawesomeGraphQL('api');
+    const client = new GQLClient('api');
     await expect(client.accessToken()).resolves.toBe('one');
     await expect(client.accessToken()).resolves.toBe('two');
   });
@@ -158,7 +158,7 @@ describe('FontawesomeGraphQL', () => {
       }))
       .mockResolvedValueOnce(jsonResponse({ data: {} })));
 
-    const client = new FontawesomeGraphQL('api');
+    const client = new GQLClient('api');
     await expect(client.getKits()).resolves.toEqual([]);
   });
 
@@ -258,7 +258,7 @@ describe('FontawesomeGraphQL', () => {
       }));
     vi.stubGlobal('fetch', fetchMock);
 
-    const client = new FontawesomeGraphQL('api');
+    const client = new GQLClient('api');
     await expect(client.getKitFamilyStyles()).resolves.toEqual([
       {
         name: 'Subset',
@@ -319,12 +319,12 @@ describe('FontawesomeGraphQL', () => {
       }))
       .mockResolvedValueOnce(jsonResponse({ data: {} })));
 
-    const client = new FontawesomeGraphQL('api');
+    const client = new GQLClient('api');
     await expect(client.getKitFamilyStyles()).resolves.toEqual([]);
   });
 });
 
-describe('FontawesomeGraphQL.discoverSchema', () => {
+describe('GQLClient.discoverSchema', () => {
   const tokenData = {
     access_token: 'discovery-token',
     expires_in: 10_000,
@@ -387,7 +387,7 @@ describe('FontawesomeGraphQL.discoverSchema', () => {
       .mockResolvedValueOnce(jsonResponse({ data: { __schema: schema } }));
     vi.stubGlobal('fetch', fetchMock);
 
-    const client = new FontawesomeGraphQL('api');
+    const client = new GQLClient('api');
     await expect(client.discoverSchema()).resolves.toEqual(schema);
     await expect(client.accessToken()).resolves.toBe('discovery-token');
 
@@ -417,7 +417,7 @@ describe('FontawesomeGraphQL.discoverSchema', () => {
         errors: [{ message: 'Introspection is disabled' }],
       })));
 
-    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+    await expect(new GQLClient('api').discoverSchema()).rejects.toThrow(
       'Introspection is disabled',
     );
   });
@@ -427,7 +427,7 @@ describe('FontawesomeGraphQL.discoverSchema', () => {
       .mockResolvedValueOnce(jsonResponse(tokenData))
       .mockResolvedValueOnce(jsonResponse({ data })));
 
-    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+    await expect(new GQLClient('api').discoverSchema()).rejects.toThrow(
       'GraphQL schema discovery returned no schema',
     );
   });
@@ -441,7 +441,7 @@ describe('FontawesomeGraphQL.discoverSchema', () => {
         statusText: 'Forbidden',
       })));
 
-    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+    await expect(new GQLClient('api').discoverSchema()).rejects.toThrow(
       'GraphQL request failed: 403 Forbidden',
     );
   });
@@ -454,22 +454,22 @@ describe('FontawesomeGraphQL.discoverSchema', () => {
     }));
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(new FontawesomeGraphQL('api').discoverSchema()).rejects.toThrow(
+    await expect(new GQLClient('api').discoverSchema()).rejects.toThrow(
       'Token request failed: 401 Unauthorized',
     );
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 
-describe.skipIf(!process.env.FA_API_TOKEN)('FontawesomeGraphQL live', () => {
+describe.skipIf(!process.env.FA_API_TOKEN)('GQLClient live', () => {
   it('returns kits for the configured token', async () => {
-    const client = new FontawesomeGraphQL(process.env.FA_API_TOKEN ?? '');
+    const client = new GQLClient(process.env.FA_API_TOKEN ?? '');
     const kits = await client.getKits();
     expect(Array.isArray(kits)).toBe(true);
   }, 20_000);
 
   it('discovers the schema and the fields behind me.kits', async () => {
-    const client = new FontawesomeGraphQL(process.env.FA_API_TOKEN ?? '');
+    const client = new GQLClient(process.env.FA_API_TOKEN ?? '');
     const schema = await client.discoverSchema();
     const queryType = schema.types.find((type) => type.name === schema.queryType.name);
     const meField = queryType?.fields?.find((field) => field.name === 'me');
@@ -490,7 +490,7 @@ describe.skipIf(!process.env.FA_API_TOKEN)('FontawesomeGraphQL live', () => {
   }, 20_000);
 
   it('returns the family styles included in each kit', async () => {
-    const client = new FontawesomeGraphQL(process.env.FA_API_TOKEN ?? '');
+    const client = new GQLClient(process.env.FA_API_TOKEN ?? '');
     const kits = await client.getKitFamilyStyles();
     expect(kits.length).toBeGreaterThan(0);
     for (const kit of kits) {

@@ -8,7 +8,7 @@
 <script type="module">
   import { faKit } from "/assets/fa-font-kit/dist/faKit.client.js";
 
-  faKit("00b1b3bcf8", "/assets/fa-font-kit/dist", "all.min.css");
+  faKit("00b1b3bcf8", "/assets/fa-font-kit/dist");
 </script>
 ```
 

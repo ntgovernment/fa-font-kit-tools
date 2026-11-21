@@ -28,9 +28,10 @@ At site you would use the `faKit.client.js` in head or file loaded in head.
 
 ```html
 <head>
-  <script src="path-to-the-gitbridge-asset/dist/faKit.client.js"></script>
-  <script>
-    faKit('%global_site_metadata_faKitID%', 'path-to-the-gitbridge-asset/dist/');
+  <script type="module">
+    import { faKit } from "/gitbridge-path/dist/faKit.client.js";
+
+    faKit("%global_site_metadata_faKitID%", "/gitbridge-path/dist");
   </script>
 </head>
 ```

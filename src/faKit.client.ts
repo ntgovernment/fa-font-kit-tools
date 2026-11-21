@@ -3,13 +3,13 @@ export function faKit(kitID: string, baseFallbackPath: string, fileName = 'all.m
   s.src = `https://kit.fontawesome.com/${kitID}.js`;
   s.crossOrigin = 'anonymous';
   document.head.appendChild(s);
-  document.fonts.ready.then(async () => {
-    const major = await kitMajor(baseFallbackPath, kitID);
-    if (!major) {
-      if (debug) console.log('Fontawesome fallback kit version not found');
-      return;
-    }
-    document.addEventListener("DOMContentLoaded", () => {
+  const fallback = () => {
+    document.fonts.ready.then(async () => {
+      const major = await kitMajor(baseFallbackPath, kitID);
+      if (!major) {
+        if (debug) console.log('Fontawesome fallback kit version not found');
+        return;
+      }
       document.fonts.load(`1px "Font Awesome ${major} Pro"`)
         .then(() => {
           if (debug) console.log('Fontawesome cdn loaded');
@@ -23,7 +23,12 @@ export function faKit(kitID: string, baseFallbackPath: string, fileName = 'all.m
           document.head.appendChild(l);
         });
     });
-  });
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", fallback);
+  } else {
+    fallback();
+  }
 }
 
 async function kitMajor(baseFallbackPath: string, kitID: string): Promise<string | undefined> {

@@ -9,18 +9,20 @@ export function faKit(kitID: string, baseFallbackPath: string, fileName = 'all.m
       if (debug) console.log('Fontawesome fallback kit version not found');
       return;
     }
-    document.fonts.load(`1px "Font Awesome ${major} Pro"`)
-      .then(() => {
-        if (debug) console.log('Fontawesome cdn loaded');
-      })
-      .catch(() => {
-        if (debug) console.log('Load Fontawesome fallback');
-        const l = document.createElement('link');
-        l.rel = 'stylesheet';
-        l.href = `${baseFallbackPath}/kit-${kitID}/${fileName}`;
-        if (debug) l.onload = () => { console.log('Fontawesome fallback loaded'); };
-        document.head.appendChild(l);
-      });
+    document.addEventListener("DOMContentLoaded", () => {
+      document.fonts.load(`1px "Font Awesome ${major} Pro"`)
+        .then(() => {
+          if (debug) console.log('Fontawesome cdn loaded');
+        })
+        .catch(() => {
+          if (debug) console.log('Load Fontawesome fallback');
+          const l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = `${baseFallbackPath}/kit-${kitID}/${fileName}`;
+          if (debug) l.onload = () => { console.log('Fontawesome fallback loaded'); };
+          document.head.appendChild(l);
+        });
+    });
   });
 }
 

@@ -263,7 +263,9 @@ async function writeKitStylesheets(icons: string, token: string, versionKey: str
   await mkdir(dest, { recursive: true });
   const cssDir = path.join(icons, 'css');
   const entries = await readdir(cssDir);
-  for (const name of entries.filter((entry) => entry.startsWith('all'))) {
+  for (const name of entries.filter((entry) => (
+    entry.startsWith('all') || entry.startsWith('fontawesome')
+  ))) {
     const css = await readFile(path.join(cssDir, name), 'utf8');
     await writeFile(path.join(dest, name), rewriteStylesheetPaths(css, versionKey));
   }

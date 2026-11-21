@@ -1,6 +1,7 @@
 import { exec } from 'node:child_process';
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import dotenv from 'dotenv';
 import { GQLClient, FAKitExtended } from "./GQLClient.client.js";
@@ -45,8 +46,9 @@ if (![FA_API_TOKEN, FA_PKG_TOKEN].every(Boolean)) {
     process?.exit(1);
 }
 
-// run
-main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}
 
 async function main() {
   const flags = parseArgs(process.argv.slice(2));
@@ -165,13 +167,59 @@ async function installKit(kit: FAKitExtended) {
   console.log('Done.');
 }
 
-async function copyInstalledKit(kit: FAKitExtended): Promise<string> {
-  const source = path.join(process.cwd(), 'node_modules', '@awesome.me', `kit-${kit.token}`, 'icons');
-  const dest = path.join(distDir, `kit-${kit.token}`);
+export async function copyInstalledKit(kit: FAKitExtended): Promise<string> {
+  const versionKey = kitVersionKey(kit.version);
+  const icons = path.join(process.cwd(), 'node_modules', '@awesome.me', `kit-${kit.token}`, 'icons');
+  await mergeSharedAssets(icons, versionKey);
+  return writeKitStylesheets(icons, kit.token, versionKey);
+}
+
+function kitVersionKey(version: string): string {
+  if (/^\d+\.\d+\.\d+$/.test(version)) return version;
+  if (version === 'latest') return '5';
+  const major = version.split('.')[0];
+  return /^\d+$/.test(major) ? major : '0';
+}
+
+async function mergeSharedAssets(icons: string, versionKey: string) {
+  const shared = path.join(distDir, 'fa-versions', versionKey);
+  await mergeDir(path.join(icons, 'webfonts'), path.join(shared, 'webfonts'));
+  await mergeDir(path.join(icons, 'css'), path.join(shared, 'css'), (name) => !name.startsWith('all'));
+}
+
+async function mergeDir(source: string, dest: string, include: (name: string) => boolean = () => true) {
+  let entries;
+  try {
+    entries = await readdir(source, { withFileTypes: true });
+  } catch (err) {
+    if (isEnoent(err)) return;
+    throw err;
+  }
+  await mkdir(dest, { recursive: true });
+  for (const entry of entries) {
+    if (!include(entry.name)) continue;
+    const from = path.join(source, entry.name);
+    const to = path.join(dest, entry.name);
+    if (entry.isDirectory()) await mergeDir(from, to);
+    else if (entry.isFile()) await cp(from, to);
+  }
+}
+
+async function writeKitStylesheets(icons: string, token: string, versionKey: string): Promise<string> {
+  const dest = path.join(distDir, `kit-${token}`);
   await rm(dest, { recursive: true, force: true });
-  await mkdir(distDir, { recursive: true });
-  await cp(source, dest, { recursive: true });
+  await mkdir(dest, { recursive: true });
+  const cssDir = path.join(icons, 'css');
+  const entries = await readdir(cssDir);
+  for (const name of entries.filter((entry) => entry.startsWith('all'))) {
+    const css = await readFile(path.join(cssDir, name), 'utf8');
+    await writeFile(path.join(dest, name), rewriteStylesheetPaths(css, versionKey));
+  }
   return path.relative(process.cwd(), dest);
+}
+
+function rewriteStylesheetPaths(css: string, versionKey: string): string {
+  return css.replaceAll('../webfonts/', `../fa-versions/${versionKey}/webfonts/`);
 }
 
 function kitResult(kit: FAKitExtended) {

@@ -14,7 +14,7 @@ export function faKit(kitID, baseFallbackPath, debug = false) {
                 console.log('Load Fontawesome fallback');
             const l = document.createElement('link');
             l.rel = 'stylesheet';
-            l.href = `${baseFallbackPath}/kit-${kitID}/css/all.min.css`;
+            l.href = `${baseFallbackPath}/kit-${kitID}/all.min.css`;
             if (debug)
                 l.onload = () => { console.log('Fontawesome fallback loaded'); };
             document.head.appendChild(l);

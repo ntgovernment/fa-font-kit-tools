@@ -119,7 +119,7 @@ describe('FontawesomeGraphQL', () => {
 
     const client = new FontawesomeGraphQL('api');
     await expect(client.getKits()).resolves.toEqual([
-      { name: 'A', token: 't', version: '1', licenseSelected: 'pro' },
+      { name: 'A', token: 't', version: '1', licenseSelected: 'pro', major: 1 },
     ]);
     await expect(client.getKits()).resolves.toEqual([]);
 
@@ -160,6 +160,167 @@ describe('FontawesomeGraphQL', () => {
 
     const client = new FontawesomeGraphQL('api');
     await expect(client.getKits()).resolves.toEqual([]);
+  });
+
+  it('lists the family styles included in each kit and follows extra pages', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({
+        access_token: 'one',
+        expires_in: 10_000,
+        scopes: ['kits_read'],
+        token_type: 'Bearer',
+      }))
+      .mockResolvedValueOnce(jsonResponse({
+        data: {
+          me: {
+            kits: [{
+              name: 'Subset',
+              token: 'subset',
+              version: '7.x',
+              subsetType: 'AUTO',
+              familyStylesPaginated: {
+                totalPageCount: 2,
+                familyStyles: [{
+                  familyStyle: {
+                    family: 'classic',
+                    style: 'light',
+                    prefix: 'fal',
+                    shorthand: 'light',
+                    label: 'Classic Light',
+                  },
+                  only: null,
+                }],
+              },
+            }, {
+              name: 'Custom',
+              token: 'custom',
+              version: 'latest',
+              subsetType: 'CUSTOM',
+              familyStylesPaginated: {
+                totalPageCount: 1,
+                familyStyles: [{
+                  familyStyle: {
+                    family: 'classic',
+                    style: 'solid',
+                    prefix: 'fas',
+                    shorthand: 'solid',
+                    label: 'Classic Solid',
+                  },
+                  only: { totalIconVariantCount: 4 },
+                }],
+              },
+            }],
+          },
+        },
+      }))
+      .mockResolvedValueOnce(jsonResponse({
+        data: {
+          me: {
+            kits: [{
+              name: 'Subset',
+              token: 'subset',
+              version: '7.x',
+              subsetType: 'AUTO',
+              familyStylesPaginated: {
+                totalPageCount: 2,
+                familyStyles: [{
+                  familyStyle: {
+                    family: 'sharp',
+                    style: 'solid',
+                    prefix: 'fass',
+                    shorthand: 'sharp-solid',
+                    label: 'Sharp Solid',
+                  },
+                  only: null,
+                }],
+              },
+            }, {
+              name: 'Custom',
+              token: 'custom',
+              version: 'latest',
+              subsetType: 'CUSTOM',
+              familyStylesPaginated: {
+                totalPageCount: 1,
+                familyStyles: [{
+                  familyStyle: {
+                    family: 'ignored',
+                    style: 'ignored',
+                    prefix: 'nope',
+                    shorthand: 'ignored',
+                    label: 'Ignored',
+                  },
+                  only: { totalIconVariantCount: 99 },
+                }],
+              },
+            }],
+          },
+        },
+      }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = new FontawesomeGraphQL('api');
+    await expect(client.getKitFamilyStyles()).resolves.toEqual([
+      {
+        name: 'Subset',
+        token: 'subset',
+        version: '7.x',
+        major: 7,
+        subsetType: 'AUTO',
+        familyStyles: [
+          {
+            family: 'classic',
+            style: 'light',
+            prefix: 'fal',
+            shorthand: 'light',
+            label: 'Classic Light',
+            selectedIconCount: null,
+          },
+          {
+            family: 'sharp',
+            style: 'solid',
+            prefix: 'fass',
+            shorthand: 'sharp-solid',
+            label: 'Sharp Solid',
+            selectedIconCount: null,
+          },
+        ],
+      },
+      {
+        name: 'Custom',
+        token: 'custom',
+        version: 'latest',
+        major: 5,
+        subsetType: 'CUSTOM',
+        familyStyles: [{
+          family: 'classic',
+          style: 'solid',
+          prefix: 'fas',
+          shorthand: 'solid',
+          label: 'Classic Solid',
+          selectedIconCount: 4,
+        }],
+      },
+    ]);
+
+    const graphqlCalls = fetchMock.mock.calls.filter((call) => call[0] === 'https://api.fontawesome.com');
+    expect(graphqlCalls).toHaveLength(2);
+    expect(JSON.parse(graphqlCalls[0][1].body).variables).toEqual({ page: 1 });
+    expect(JSON.parse(graphqlCalls[1][1].body).variables).toEqual({ page: 2 });
+    expect(JSON.parse(graphqlCalls[0][1].body).query).toContain('familyStylesPaginated(page: $page, pageSize: 50)');
+  });
+
+  it('returns an empty style list when the account has no kits', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce(jsonResponse({
+        access_token: 'one',
+        expires_in: 10_000,
+        scopes: [],
+        token_type: 'Bearer',
+      }))
+      .mockResolvedValueOnce(jsonResponse({ data: {} })));
+
+    const client = new FontawesomeGraphQL('api');
+    await expect(client.getKitFamilyStyles()).resolves.toEqual([]);
   });
 });
 
@@ -327,4 +488,20 @@ describe.skipIf(!process.env.FA_API_TOKEN)('FontawesomeGraphQL live', () => {
       expect.arrayContaining(['name', 'token', 'version', 'licenseSelected']),
     );
   }, 20_000);
+
+  it('returns the family styles included in each kit', async () => {
+    const client = new FontawesomeGraphQL(process.env.FA_API_TOKEN ?? '');
+    const kits = await client.getKitFamilyStyles();
+    expect(kits.length).toBeGreaterThan(0);
+    for (const kit of kits) {
+      expect(['AUTO', 'CUSTOM', 'FULL']).toContain(kit.subsetType);
+      expect(kit.familyStyles.length).toBeGreaterThan(0);
+      expect(kit.familyStyles[0]).toEqual(expect.objectContaining({
+        family: expect.any(String),
+        style: expect.any(String),
+        prefix: expect.any(String),
+        label: expect.any(String),
+      }));
+    }
+  }, 30_000);
 });

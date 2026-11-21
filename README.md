@@ -1,54 +1,52 @@
-Font Awesome kit loader and GraphQL client.
+#Fontawesom kit tools
 
-**WORK IN PROGRESS**
+Font Awesome kit loader with local kit accurate fallback.
 
-```bash
-npm test
-npm run build
+## What is this for?
+
+Fontawesome provides a cdn loader for your font kits.
+Which you typically place in a script tag in te head.
+
+We have a requirement that we have a local fallback if that happens to fail to load.
+
+This has led to multiple solutions some of which are working fine some of which don't.
+
+**What's new?**
+
+This new set of tools will provide a single place to call the kit and setup a fallback which points to the same kit files sourced from the kits own custom npm package.
+
+## What work is required to implement on a site
+
+### Setup a gitbridge to this repo
+
+Ideally this would be at a top level that multiple sites can use.
+
+At site you would use the `faKit.client.js` in head or file loaded in head.
+
+```html
+<head>
+  <script src="path-to-the-gitbridge-asset/dist/faKit.client.js"></script>
+  <script>
+    faKit('%global_site_metadata_faKitID%', 'path-to-the-gitbridge-asset/dist/');
+  </script>
+</head>
 ```
 
-`npm run build` compiles `src/` to `dist/` and writes declaration files. `npm test` typechecks the project, then runs the Vitest suite.
+That will add a script tag per the normal fontawesome directions.
 
-Set `FA_API_TOKEN` to include the live Font Awesome API check:
+Then it will use the browsers fonts api to detect if the font has loaded or not. When fonts are ready and if the fontawesom font doesnt work it will then
+add a link to the fallback css.
 
-```bash
-npx dotenv run -- npm test
-```
+The fallback will be the same kit icons.
 
-## Discover the GraphQL API
+### Kit setup
 
-Use the GraphQL client from server-side code only; keep your API and access tokens
-out of browser bundles and logs.
+For the fallback to work the kit needs to have the package feature enabled in its settings.
 
-```ts
-import { GQLClient } from './src/GQLClient.client.js';
+### Repo kit updates
 
-const apiToken = process.env.FA_API_TOKEN;
-if (!apiToken) throw new Error('FA_API_TOKEN is required');
+When a kit is create or updated we need to run a github action in the repo.
 
-const client = new GQLClient(apiToken);
-const schema = await client.discoverSchema();
+This will install the kit and move the required files to dist.
 
-console.dir({
-  queryType: schema.queryType,
-  kitTypes: schema.types.filter((type) => /kit/i.test(type.name)),
-}, { depth: null });
-```
-
-`discoverSchema()` uses authenticated GraphQL introspection and returns the query,
-mutation, and subscription root names plus the available types. Types include
-field descriptions, arguments and defaults, nested type references, enum values,
-interfaces, possible types, and deprecated fields/enum values with their reasons.
-Follow `type.ofType` through `NON_NULL` and `LIST` wrappers to find a field's named
-type. Inspect the query root and the types behind `me` and `kits` to find additional
-kit metadata and any required arguments; the example's name filter is just a
-starting point.
-
-Discovery does not fetch kit values or change `getKits()`'s existing selection.
-Once you identify useful fields, use the exported `queryGraphQL()` helper with
-`await client.accessToken()` to query them explicitly. Schema availability does
-not guarantee your token has permission to read every field.
-
-HTTP/GraphQL errors (including rejected introspection) are propagated. A missing
-schema also throws rather than returning an empty discovery result. The live
-tests include schema discovery when `FA_API_TOKEN` is configured.
+It will then commit and send a pull rewuest to the gitbridge via webhook.

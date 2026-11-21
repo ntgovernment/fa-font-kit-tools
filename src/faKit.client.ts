@@ -12,7 +12,7 @@ export function faKit(kitID: string, baseFallbackPath: string, debug = false): v
         if (debug) console.log('Load Fontawesome fallback');
         const l = document.createElement('link');
         l.rel = 'stylesheet';
-        l.href = `${baseFallbackPath}/${kitID}.css`;
+        l.href = `${baseFallbackPath}/kit-${kitID}/all.min.css`;
         if (debug) l.onload = () => { console.log('Fontawesome fallback loaded'); };
         document.head.appendChild(l);
       });

@@ -90,7 +90,7 @@ describe('faKit', () => {
     expect(link).toMatchObject({
       tag: 'link',
       rel: 'stylesheet',
-      href: '/fallback/abc123.css',
+      href: '/fallback/kit-abc123/all.min.css',
     });
     expect(log).toHaveBeenCalledWith('Load Fontawesome fallback');
 

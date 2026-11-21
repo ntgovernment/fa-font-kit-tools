@@ -1,5 +1,5 @@
 {
-  "name": "ntg-font-kit",
+  "name": "fa-font-kit-tools",
   "version": "1.0.0",
   "description": "Font Awesome kit loader and GraphQL client",
   "type": "module",

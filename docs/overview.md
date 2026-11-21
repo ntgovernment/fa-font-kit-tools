@@ -29,7 +29,7 @@ flowchart LR
 The fallback matches the CDN kit only when that kit has been built into this repo.
 
 - The kit token must appear in [`dist/kit-versions.json`](../dist/kit-versions.json). The loader uses that file to choose the font family name (`Font Awesome 6 Pro`, `Font Awesome 7 Pro`, and so on). If the token is missing, the loader does not add a stylesheet.
-- The kit stylesheet must exist at `dist/kit-{token}/`. The build writes `all.css` and `all.min.css` there.
+- The kit stylesheet must exist at `dist/kit-{token}/`. The build writes each `all*` and `fontawesome*` CSS file from the kit package there.
 - Those stylesheets point at shared webfonts under `dist/fa-versions/{version}/`.
 
 Details for page authors are in [Using the loader](using-the-loader.md). How those files are produced is in [Building kits](building-kits.md) and [Output layout](output-layout.md).

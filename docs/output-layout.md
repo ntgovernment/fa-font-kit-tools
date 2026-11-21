@@ -15,6 +15,8 @@ dist/
   kit-{token}/
     all.css
     all.min.css
+    fontawesome.css
+    fontawesome.min.css
   fa-versions/{versionKey}/
     webfonts/              woff2 and ttf from the kit package
     css/                   kit CSS except files named all*
@@ -24,11 +26,11 @@ There is no `dist/index.js`. [`package.json`](../package.json) `main` and `expor
 
 ## Kit stylesheets
 
-For each copied kit, only CSS files whose names start with `all` are written to `dist/kit-{token}/`. In the current packages those are `all.css` and `all.min.css`.
+For each copied kit, CSS files whose names start with `all` or `fontawesome` are written to `dist/kit-{token}/`. In the current packages those are `all.css`, `all.min.css`, `fontawesome.css`, and `fontawesome.min.css`. The loader links whichever of those names is passed as `fileName`.
 
-`../webfonts/` in that CSS is rewritten to `../fa-versions/{versionKey}/webfonts/`. From a page that loaded `dist/kit-41b791824a/all.min.css`, a font URL resolves to `dist/fa-versions/6/webfonts/…`.
+`../webfonts/` in the kit copies is rewritten to `../fa-versions/{versionKey}/webfonts/`. From a page that loaded `dist/kit-41b791824a/all.min.css`, a font URL resolves to `dist/fa-versions/6/webfonts/…`.
 
-Per-style CSS (`solid.css`, `light.css`, `fontawesome.css`, and the rest) stays under `fa-versions/{versionKey}/css/`. The loader does not link those files. The `all*` stylesheet is the fallback document.
+Per-style CSS (`solid.css`, `light.css`, and the rest) stays under `fa-versions/{versionKey}/css/`. The shared copy skips names starting with `all` and still includes `fontawesome*`, with the package's original `../webfonts/` paths. The loader does not link the shared stylesheets.
 
 ## Version keys
 

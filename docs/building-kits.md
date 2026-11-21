@@ -48,8 +48,8 @@ Kits come from `GQLClient.getKits()`. For every kit the build applies these rule
 `copyInstalledKit` reads `node_modules/@awesome.me/kit-{token}/icons` and:
 
 - Merges `icons/webfonts` into `dist/fa-versions/{versionKey}/webfonts`.
-- Merges `icons/css` into `dist/fa-versions/{versionKey}/css`, skipping file names that start with `all`.
-- Rewrites every `icons/css` file whose name starts with `all`, replacing `../webfonts/` with `../fa-versions/{versionKey}/webfonts/`, and writes those files to `dist/kit-{token}/`. The kit directory is removed and recreated on each copy.
+- Merges `icons/css` into `dist/fa-versions/{versionKey}/css`, skipping file names that start with `all`. Names that start with `fontawesome` are still copied into that shared directory.
+- Rewrites every `icons/css` file whose name starts with `all` or `fontawesome`, replacing `../webfonts/` with `../fa-versions/{versionKey}/webfonts/`, and writes those files to `dist/kit-{token}/`. The kit directory is removed and recreated on each copy.
 - Records the token under its major version in `dist/kit-versions.json`.
 
 Directories that are missing in the package are skipped. Other copy errors fail that kit. Shared files are copied over when names collide, so kits that share a version key overwrite the same webfont and CSS names.

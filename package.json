@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/rhysburnie/ntgFontKit#readme",
   "dependencies": {
-    "@awesome.me/kit-00b1b3bcf8": "^1.0.5",
+    "@awesome.me/kit-00b1b3bcf8": "^1.0.7",
     "@awesome.me/kit-41b791824a": "^1.0.17",
     "dotenv": "^18.0.10"
   },

@@ -1,423 +1,181 @@
-
-> fa-font-kit-tools@1.0.0 fa-usage
-> npm run build && node dist/lib/faUsageDetector/faUsageDetector.cli.js --json tests/fixtures/archive.txt.gz --config detector-config.json
-
-
-> fa-font-kit-tools@1.0.0 build
-> tsc -p tsconfig.build.json
-
 [
   {
     "classes": [
       {
-        "value": "fal",
-        "count": 23,
-        "lines": [
-          228,
-          248,
-          285,
-          305,
-          313,
-          316,
-          319,
-          322,
-          433,
-          573,
-          589,
-          605,
-          661,
-          666,
-          675,
-          679,
-          684,
-          689,
-          693,
-          698,
-          702,
-          773,
-          1196
-        ],
-        "warcTargetUri": "https://internal.nt.gov.au/dli/whs/provide-first-aid/first-aid-officers/?expanded=1",
-        "families": [
-          "modern"
-        ]
-      },
-      {
         "value": "fa",
-        "count": 26,
+        "count": 215,
         "lines": [
-          228,
-          248,
-          271,
-          285,
-          305,
-          313,
-          316,
-          319,
-          322,
-          433,
-          573,
-          589,
-          605,
-          661,
-          666,
-          675,
-          679,
-          684,
-          689,
-          693,
-          698,
-          702,
-          719,
-          773,
-          1196,
-          1429
+          11,
+          27,
+          32,
+          37,
+          42,
+          47,
+          52,
+          57,
+          62,
+          67,
+          72,
+          77,
+          82,
+          87,
+          92,
+          97,
+          102,
+          107,
+          112,
+          117,
+          122,
+          127,
+          132,
+          137,
+          142,
+          147,
+          152,
+          157,
+          162,
+          167,
+          172,
+          177,
+          182,
+          187,
+          192,
+          197,
+          202,
+          207,
+          212,
+          217,
+          222,
+          227,
+          232,
+          237,
+          242,
+          247,
+          252,
+          257,
+          262,
+          267,
+          272,
+          277,
+          282,
+          287,
+          292,
+          297,
+          302,
+          307,
+          312,
+          317
         ],
-        "warcTargetUri": "https://internal.nt.gov.au/dli/whs/provide-first-aid/first-aid-officers/?expanded=1",
         "families": [
           "legacy"
         ]
       },
       {
-        "value": "fa-solid",
-        "count": 1,
+        "value": "fal",
+        "count": 194,
         "lines": [
-          271
+          27,
+          32,
+          37,
+          47,
+          52,
+          57,
+          62,
+          67,
+          72,
+          77,
+          82,
+          87,
+          92,
+          97,
+          102,
+          107,
+          112,
+          117,
+          122,
+          127,
+          132,
+          137,
+          142,
+          147,
+          152,
+          157,
+          162,
+          167,
+          172,
+          177,
+          182,
+          187,
+          192,
+          197,
+          202,
+          207,
+          212,
+          217,
+          222,
+          227,
+          232,
+          237,
+          242,
+          247,
+          252,
+          257,
+          262,
+          267,
+          272,
+          277,
+          282,
+          287,
+          292,
+          297,
+          302,
+          312,
+          317
         ],
-        "warcTargetUri": "https://internal.nt.gov.au/dli/whs/provide-first-aid/first-aid-officers/?expanded=1",
+        "families": [
+          "modern"
+        ]
+      },
+      {
+        "value": "fa-solid",
+        "count": 4,
+        "lines": [
+          37,
+          307,
+          312,
+          317
+        ],
         "families": [
           "legacy"
         ]
       },
       {
         "value": "fas",
-        "count": 1,
+        "count": 9,
         "lines": [
-          719
+          42,
+          112,
+          117,
+          172,
+          267,
+          307
         ],
-        "warcTargetUri": "https://internal.nt.gov.au/dli/whs/provide-first-aid/first-aid-officers/?expanded=1",
-        "families": [
-          "modern"
-        ]
-      },
-      {
-        "value": "fa",
-        "count": 16,
-        "lines": [
-          12183,
-          12184,
-          12341,
-          12352,
-          12437,
-          12580,
-          12615,
-          12833,
-          12834,
-          12837,
-          12897,
-          12906
-        ],
-        "warcTargetUri": "https://www.googletagmanager.com/gtag/js?id=G-PSK5KHPMG2",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fa",
-        "count": 36,
-        "lines": [
-          14512,
-          14520,
-          14540,
-          14541,
-          14564,
-          14577,
-          14593,
-          14612,
-          14613,
-          14614,
-          14615,
-          14639,
-          14645,
-          14646,
-          14650,
-          14651,
-          14652,
-          14717,
-          14718,
-          14880,
-          14885,
-          14889,
-          14971,
-          14981,
-          15022
-        ],
-        "warcTargetUri": "https://internal.nt.gov.au/__data/assets/js_file_folder/0009/738819/global-v2.js",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fal",
-        "count": 13,
-        "lines": [
-          14564,
-          14577,
-          14593,
-          14606,
-          14612,
-          14613,
-          14614,
-          14615,
-          14880,
-          14885,
-          14889,
-          14971,
-          14981
-        ],
-        "warcTargetUri": "https://internal.nt.gov.au/__data/assets/js_file_folder/0009/738819/global-v2.js",
         "families": [
           "modern"
         ]
       },
       {
         "value": "far",
-        "count": 1,
+        "count": 3,
         "lines": [
-          15022
+          152
         ],
-        "warcTargetUri": "https://internal.nt.gov.au/__data/assets/js_file_folder/0009/738819/global-v2.js",
         "families": [
           "modern"
-        ]
-      },
-      {
-        "value": "fas",
-        "count": 5,
-        "lines": [
-          15349,
-          15354,
-          15359,
-          15364,
-          15384
-        ],
-        "warcTargetUri": "https://internal.nt.gov.au/__data/assets/js_file/0003/566931/status-toolbar.js",
-        "families": [
-          "modern"
-        ]
-      },
-      {
-        "value": "fa",
-        "count": 5,
-        "lines": [
-          15349,
-          15354,
-          15359,
-          15364,
-          15384
-        ],
-        "warcTargetUri": "https://internal.nt.gov.au/__data/assets/js_file/0003/566931/status-toolbar.js",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fa-brands",
-        "count": 30,
-        "lines": [
-          103914,
-          103919,
-          103921,
-          103940,
-          103944,
-          103946,
-          103952,
-          103956,
-          103958,
-          103964,
-          103969,
-          103971,
-          103977,
-          103994,
-          103996,
-          104794,
-          104799,
-          104801,
-          104807,
-          104811,
-          104813,
-          104819,
-          104823,
-          104825,
-          104831,
-          104836,
-          104838,
-          104844,
-          104860,
-          104862
-        ],
-        "warcTargetUri": "metadata://gnu.org/software/wget/warc/wget.log",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fa-duotone",
-        "count": 15,
-        "lines": [
-          104002,
-          104015,
-          104017,
-          104044,
-          104050,
-          104052,
-          104058,
-          104066,
-          104068,
-          104074,
-          104087,
-          104089,
-          104095,
-          104149,
-          104151
-        ],
-        "warcTargetUri": "metadata://gnu.org/software/wget/warc/wget.log",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fa-light",
-        "count": 30,
-        "lines": [
-          104157,
-          104169,
-          104171,
-          104197,
-          104203,
-          104205,
-          104211,
-          104218,
-          104220,
-          104226,
-          104238,
-          104240,
-          104246,
-          104296,
-          104298,
-          104868,
-          104879,
-          104881,
-          104906,
-          104912,
-          104914,
-          104920,
-          104927,
-          104929,
-          104935,
-          104946,
-          104948,
-          104954,
-          104997,
-          104999
-        ],
-        "warcTargetUri": "metadata://gnu.org/software/wget/warc/wget.log",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fa-regular",
-        "count": 30,
-        "lines": [
-          104304,
-          104315,
-          104317,
-          104342,
-          104348,
-          104350,
-          104356,
-          104363,
-          104365,
-          104371,
-          104382,
-          104384,
-          104390,
-          104435,
-          104437,
-          105005,
-          105015,
-          105017,
-          105041,
-          105046,
-          105048,
-          105054,
-          105060,
-          105062,
-          105068,
-          105078,
-          105080,
-          105086,
-          105125,
-          105127
-        ],
-        "warcTargetUri": "metadata://gnu.org/software/wget/warc/wget.log",
-        "families": [
-          "legacy"
-        ]
-      },
-      {
-        "value": "fa-solid",
-        "count": 30,
-        "lines": [
-          104443,
-          104453,
-          104455,
-          104479,
-          104484,
-          104486,
-          104492,
-          104498,
-          104500,
-          104506,
-          104516,
-          104518,
-          104524,
-          104561,
-          104563,
-          105133,
-          105142,
-          105144,
-          105167,
-          105172,
-          105174,
-          105180,
-          105186,
-          105188,
-          105194,
-          105203,
-          105205,
-          105211,
-          105243,
-          105245
-        ],
-        "warcTargetUri": "metadata://gnu.org/software/wget/warc/wget.log",
-        "families": [
-          "legacy"
         ]
       }
     ],
     "escapes": [],
-    "source": "tests/fixtures/archive.txt.gz",
-    "skippedWarcTargetUris": [
-      "https://use.typekit.net/yht7rxj.css",
-      "https://pro.fontawesome.com/releases/v5.15.4/css/all.css",
-      "https://internal.nt.gov.au/cdn/fonts/roboto/roboto.css",
-      "https://internal.nt.gov.au/dli/_design/css/main.css",
-      "https://internal.nt.gov.au/__data/assets/css_file/0010/566929/status-toolbar.css",
-      "https://internal.nt.gov.au/__data/assets/css_file/0009/386397/imageslider-fotorama.css",
-      "https://internal.nt.gov.au/__data/assets/css_file/0009/264375/all.min.css",
-      "https://p.typekit.net/p.css?s=1&k=yht7rxj&ht=tk&f=39494.39495.39496.39497.39498.39499.39500.39501.39504.39505.39508.39509&a=2370124&app=typekit&e=css"
-    ]
+    "source": "tests/fixtures/ntgc-mixed.txt"
   }
 ]

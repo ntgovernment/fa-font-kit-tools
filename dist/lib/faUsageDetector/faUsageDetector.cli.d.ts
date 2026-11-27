@@ -1,0 +1,2 @@
+export declare function runFaUsageDetectorCli(args?: string[], stdout?: Pick<NodeJS.WriteStream, 'write'>, stderr?: Pick<NodeJS.WriteStream, 'write'>): Promise<number>;
+//# sourceMappingURL=faUsageDetector.cli.d.ts.map

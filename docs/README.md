@@ -2,7 +2,7 @@
 
 Documentation for the loader, the kit build, and the files sites consume from `dist/`.
 
-The package name is `fa-font-kit-tools`. Sites do not import an `index` module. The browser entry is [`dist/faKit.client.js`](../dist/faKit.client.js), and the kit build is [`dist/buildKits.js`](../dist/buildKits.js).
+The package name is `fa-font-kit-tools`. Sites do not import an `index` module. The browser entry is [`dist/lib/faKit.client.js`](../dist/lib/faKit.client.js), and the kit build is [`dist/lib/buildKits.js`](../dist/lib/buildKits.js).
 
 ## Pages
 

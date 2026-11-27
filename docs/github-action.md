@@ -2,7 +2,7 @@
 
 [Docs index](README.md) · [Building kits](building-kits.md) · [Development](development.md)
 
-[`.github/workflows/buildKits.yaml`](../.github/workflows/buildKits.yaml) is the **Build kits** workflow. It compiles the project, runs `node dist/buildKits.js`, and pushes any kit changes back to the branch that ran the job.
+[`.github/workflows/buildKits.yaml`](../.github/workflows/buildKits.yaml) is the **Build kits** workflow. It compiles the project, runs `node dist/lib/buildKits.js`, and pushes any kit changes back to the branch that ran the job.
 
 ## When it runs
 
@@ -23,7 +23,7 @@ The job runs on `ubuntu-latest` with Node.js 22 and the npm cache.
 
 1. `npm ci`, with `FONTAWESOME_PACKAGE_TOKEN` set from the `FA_PKG_TOKEN` secret so the existing `@awesome.me/kit-*` dependencies install.
 2. `npm run build`.
-3. `node dist/buildKits.js` with `FA_API_TOKEN`, `FA_PKG_TOKEN`, and `FONTAWESOME_PACKAGE_TOKEN`.
+3. `node dist/lib/buildKits.js` with `FA_API_TOKEN`, `FA_PKG_TOKEN`, and `FONTAWESOME_PACKAGE_TOKEN`.
 4. If `package.json`, `package-lock.json`, or `dist/` changed, commit as `github-actions[bot]` and `git push`.
 
 The commit message is `Build Font Awesome kits`, plus the flags that were set, for example `Build Font Awesome kits (--update)`. An empty diff skips the commit.

@@ -6,10 +6,10 @@
 
 ```sh
 npm run build
-node dist/buildKits.js
+node dist/lib/buildKits.js
 ```
 
-`npm run build` only compiles TypeScript into `dist/`. It does not download kits. `tsc` also does not delete kit files already sitting in `dist/`.
+`npm run build` only compiles TypeScript into `dist/lib/`. It does not download kits. `tsc` also does not delete kit files already sitting in `dist/`.
 
 The process exits with status 1 if `FA_API_TOKEN` or `FA_PKG_TOKEN` is missing. Tokens already in the environment are kept. Otherwise `dotenv` loads a gitignored `.env` file. See [Development](development.md).
 

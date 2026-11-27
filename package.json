@@ -3,23 +3,24 @@
   "version": "1.0.0",
   "description": "Font Awesome kit loader and GraphQL client",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/lib/index.d.ts",
+      "import": "./dist/lib/index.js",
+      "default": "./dist/lib/index.js"
     }
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "tsc --noEmit && vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "fa-usage": "npm run build && node dist/lib/faUsageDetector/faUsageDetector.cli.js"
   },
   "repository": {
     "type": "git",

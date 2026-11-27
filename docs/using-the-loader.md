@@ -2,11 +2,11 @@
 
 [Docs index](README.md) · [Overview](overview.md) · [Output layout](output-layout.md)
 
-`faKit` is exported from [`src/faKit.client.ts`](../src/faKit.client.ts) and compiled to [`dist/faKit.client.js`](../dist/faKit.client.js). The file is an ES module. Import it; a classic script tag does not create a global `faKit`.
+`faKit` is exported from [`src/faKit.client.ts`](../src/faKit.client.ts) and compiled to [`dist/lib/faKit.client.js`](../dist/lib/faKit.client.js). The file is an ES module. Import it; a classic script tag does not create a global `faKit`.
 
 ```html
 <script type="module">
-  import { faKit } from "/assets/fa-font-kit/dist/faKit.client.js";
+  import { faKit } from "/assets/fa-font-kit/dist/lib/faKit.client.js";
 
   faKit("00b1b3bcf8", "/assets/fa-font-kit/dist");
 </script>

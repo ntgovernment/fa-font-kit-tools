@@ -64,7 +64,7 @@ jobs:
           if [ -n "$RETRY" ]; then
             args+=(--retry "$RETRY")
           fi
-          node dist/buildKits.js "${args[@]}"
+          node dist/lib/buildKits.js "${args[@]}"
 
       - name: Commit kit build
         env:

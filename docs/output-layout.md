@@ -6,10 +6,11 @@
 
 ```text
 dist/
-  faKit.client.js          browser loader
-  buildKits.js             kit build
-  GQLClient.client.js      API client
-  *.d.ts / *.map           declarations and source maps from tsc
+  lib/
+    faKit.client.js        browser loader
+    buildKits.js           kit build
+    GQLClient.client.js    API client
+    *.d.ts / *.map         declarations and source maps from tsc
   kit-versions.json        major version → kit tokens
   kit-results.json         last build's installed and failed kits
   kit-{token}/
@@ -22,7 +23,7 @@ dist/
     css/                   kit CSS except files named all*
 ```
 
-There is no `dist/index.js`. [`package.json`](../package.json) `main` and `exports` point at that path, and the TypeScript sources do not emit it. Sites load `faKit.client.js` directly, as described in [Using the loader](using-the-loader.md).
+There is no `dist/lib/index.js`. [`package.json`](../package.json) `main` and `exports` point at that path, and the TypeScript sources do not emit it. Sites load `lib/faKit.client.js` directly, as described in [Using the loader](using-the-loader.md).
 
 ## Kit stylesheets
 
